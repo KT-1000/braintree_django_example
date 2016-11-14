@@ -27,13 +27,11 @@
     </div>
 
     <div class="notice-wrapper">
-{#      {% with messages = get_flashed_messages() %}#}
-{#        {% for message in messages %}#}
-{#          <div class="show notice error notice-error">#}
-{#            <span class="notice-message">{{ message }}</span>#}
-{#          </div>#}
-{#        {% endfor %}#}
-{#      {% endwith %}#}
+        {% for message in messages %}
+          <div class="show notice error notice-error">
+            <span class="notice-message">{{ message }}</span>
+          </div>
+        {% endfor %}
     </div>
   </header>
 

@@ -93,5 +93,6 @@ ENV/
 
 .idea
 env.py
-db.sqlite3
+*.sqlite3
+*.sql
 
