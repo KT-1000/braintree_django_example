@@ -1,5 +1,4 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import RequestContext, loader
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -41,13 +40,28 @@ def create_checkout(request):
                 }
             })
             if result.is_success or result.transaction:
-                return HttpResponseRedirect('show_checkout', transaction_id=result.transaction.id)
+                url = reverse('show_checkout', kwargs={'transaction_id': result.transaction.id})
+                return HttpResponseRedirect(url)
             else:
                 for x in result.errors.deep_errors:
                     messages.add_message(request, messages.INFO, 'Error: %s: %s' % (x.code, x.message))
                 return HttpResponseRedirect(reverse('new_checkout'))
+
+
+def show_checkout(request, transaction_id):
+    transaction = braintree.Transaction.find(transaction_id)
+    result = {}
+    if transaction.status in TRANSACTION_SUCCESS_STATUSES:
+        result = {
+            'header': 'Sweet Success!',
+            'icon': 'success',
+            'message': 'Your test transaction has been successfully processed. See the Braintree API response and try again.'
+        }
     else:
-        form = PaymentForm()
+        result = {
+            'header': 'Transaction Failed',
+            'icon': 'fail',
+            'message': 'Your test transaction has a status of ' + transaction.status + '. See the Braintree API response and try again.'
+        }
 
-
-# def show_checkout(request, transaction_id):
+    return render(request, 'checkouts/show.html', {'transaction': transaction, 'result': result})
